@@ -36,6 +36,7 @@ char* GlobalOrderError;
 extern void setUp(void);
 extern void tearDown(void);
 extern void test_configOneWireGpio(void);
+extern void test_configOneWireSpeed(void);
 
 
 /*=======Suite Setup=====*/
@@ -71,6 +72,7 @@ int main(void)
   suite_setup();
   UnityBegin("test_sapi_oneWire.c");
   RUN_TEST(test_configOneWireGpio, 10);
+  RUN_TEST(test_configOneWireSpeed, 16);
 
   return suite_teardown(UnityEnd());
 }

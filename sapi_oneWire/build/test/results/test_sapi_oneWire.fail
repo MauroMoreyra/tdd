@@ -2,16 +2,19 @@
 :source:
   :path: test
   :file: test_sapi_oneWire.c
-:successes: []
-:failures:
+:successes:
 - :test: test_configOneWireGpio
-  :line: 14
+  :line: 10
+  :message: ''
+:failures:
+- :test: test_configOneWireSpeed
+  :line: 19
   :message: Expected 1 Was 0
 :ignores: []
 :counts:
-  :total: 1
-  :passed: 0
+  :total: 2
+  :passed: 1
   :failed: 1
   :ignored: 0
 :stdout: []
-:time: 0.0011828639999293955
+:time: 0.0011137170004076324

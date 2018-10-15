@@ -15,6 +15,13 @@ typedef struct {
 /**
  * @brief			Config gpio for 1-Wire master interface.
  * @param			gpio: gpio 1-Wire interface.
- * @return			1 if gpio configured OK, otherwise return 0.
+ * @return			1 if gpio was configured OK, otherwise return 0.
  */
 bool_t ONE_WIRE_configGpio(gpioMap_t gpio);
+
+/**
+ * @brief			Config speed for 1-Wire master interface.
+ * @param			speed: speed 1-Wire interface.
+ * @return			1 if speed was configured OK, otherwise return 0.
+ */
+bool_t ONE_WIRE_configSpeed(uint8_t speed);
