@@ -36,31 +36,8 @@
     :arguments:
         - -p
         - -b
-        - -e "${1}"
+        - -e '^vendor.*|^build.*|^test.*|^lib.*'
         - --html
         - -r .
         - -o GcovCoverageResults.html
-  :gcov_post_report_basic:
-    :executable: gcovr
-    :optional: TRUE
-    :arguments:
-        - -p
-        - -b
-        - -e "${1}"
-        - --html
-        - -r .
-        - -o  "$": GCOV_ARTIFACTS_FILE
-  :gcov_post_report_advanced:
-    :executable: gcovr
-    :optional: TRUE
-    :arguments:
-        - -p
-        - -b
-        - -e "${1}"
-        - --html
-        - --html-details
-        - -r .
-        - -o  "$": GCOV_ARTIFACTS_FILE
-
-
 ...

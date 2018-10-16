@@ -72,7 +72,7 @@ int main(void)
   suite_setup();
   UnityBegin("test_sapi_oneWire.c");
   RUN_TEST(test_configOneWireGpio, 10);
-  RUN_TEST(test_configOneWireSpeed, 16);
+  RUN_TEST(test_configOneWireSpeed, 23);
 
   return suite_teardown(UnityEnd());
 }
