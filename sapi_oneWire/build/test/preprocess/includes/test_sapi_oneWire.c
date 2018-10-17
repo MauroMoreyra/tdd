@@ -1,4 +1,6 @@
 ---
 - unity.h
 - sapi_oneWire.h
+- mock_gpio.h
+- mock_oneWire_delay.h
 - build/temp/_test_sapi_oneWire.c

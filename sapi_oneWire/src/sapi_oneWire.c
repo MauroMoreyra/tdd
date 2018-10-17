@@ -1,7 +1,14 @@
 #include "sapi_oneWire.h"
 
+/*==================[internal data definition]===============================*/
+
 static oneWireData_t oneWireData;					// 1-Wire data structure
 static uint32_t A, B, C, D, E, F, G, H, I, J;	// 'tick' values
+
+/*==================[internal functions declaration]=========================*/
+
+/*==================[external functions definition]==========================*/
+
 
 bool_t ONE_WIRE_configGpio(gpioMap_t gpio) {
 	/*
@@ -70,3 +77,31 @@ bool_t ONE_WIRE_configSpeed(uint8_t speed) {
 	/* Si configuro OK, return 1 */
 	return (1);
 }
+
+bool_t ONE_WIRE_verifySensorPresence(oneWireData_t * oneWireData) {
+
+	bool_t result = 0;
+
+	ONE_WIRE_DELAY_250ns(G);
+	if(gpioInit(oneWireData->gpio, GPIO_OUTPUT) == 0)
+		return result;	// Error
+	if(gpioWrite(oneWireData->gpio, 0) == 0)
+		return result;	// Error
+	ONE_WIRE_DELAY_250ns(H);
+	if(gpioWrite(oneWireData->gpio, 1) == 0)
+		return result;	// Error
+	ONE_WIRE_DELAY_250ns(I);
+	// Sample for presence pulse from slave
+	if(gpioInit(oneWireData->gpio, GPIO_INPUT_PULLUP) == 0)
+		return result;
+
+	if(!gpioRead(oneWireData->gpio) == 1)
+		oneWireData->state = ONE_WIRE_SENSOR_OPERATIONAL;
+
+	// Complete the reset sequence recovery
+	ONE_WIRE_DELAY_250ns(J);
+
+	return result = 1;
+}
+
+/*==================[internal functions definition]==========================*/

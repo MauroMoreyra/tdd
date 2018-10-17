@@ -4,17 +4,20 @@
   :file: test_sapi_oneWire.c
 :successes:
 - :test: test_configOneWireGpio
-  :line: 10
+  :line: 12
   :message: ''
 - :test: test_configOneWireSpeed
-  :line: 23
+  :line: 25
+  :message: ''
+- :test: test_oneWireSensorPresenceValid
+  :line: 38
   :message: ''
 :failures: []
 :ignores: []
 :counts:
-  :total: 2
-  :passed: 2
+  :total: 3
+  :passed: 3
   :failed: 0
   :ignored: 0
 :stdout: []
-:time: 0.0013141389999873354
+:time: 0.0011209039994355408

@@ -6,6 +6,8 @@
   Unity.CurrentTestName = #TestFunc; \
   Unity.CurrentTestLineNumber = TestLineNum; \
   Unity.NumberOfTests++; \
+  CMock_Init(); \
+  UNITY_CLR_DETAILS(); \
   if (TEST_PROTECT()) \
   { \
       setUp(); \
@@ -14,7 +16,9 @@
   if (TEST_PROTECT()) \
   { \
     tearDown(); \
+    CMock_Verify(); \
   } \
+  CMock_Destroy(); \
   UnityConcludeTest(); \
 }
 
@@ -23,10 +27,13 @@
 #define UNITY_INCLUDE_SETUP_STUBS
 #endif
 #include "unity.h"
+#include "cmock.h"
 #ifndef UNITY_EXCLUDE_SETJMP_H
 #include <setjmp.h>
 #endif
 #include <stdio.h>
+#include "mock_gpio.h"
+#include "mock_oneWire_delay.h"
 
 int GlobalExpectCount;
 int GlobalVerifyOrder;
@@ -37,7 +44,28 @@ extern void setUp(void);
 extern void tearDown(void);
 extern void test_configOneWireGpio(void);
 extern void test_configOneWireSpeed(void);
+extern void test_oneWireSensorPresenceValid(void);
 
+
+/*=======Mock Management=====*/
+static void CMock_Init(void)
+{
+  GlobalExpectCount = 0;
+  GlobalVerifyOrder = 0;
+  GlobalOrderError = NULL;
+  mock_gpio_Init();
+  mock_oneWire_delay_Init();
+}
+static void CMock_Verify(void)
+{
+  mock_gpio_Verify();
+  mock_oneWire_delay_Verify();
+}
+static void CMock_Destroy(void)
+{
+  mock_gpio_Destroy();
+  mock_oneWire_delay_Destroy();
+}
 
 /*=======Suite Setup=====*/
 static void suite_setup(void)
@@ -61,7 +89,10 @@ static int suite_teardown(int num_failures)
 void resetTest(void);
 void resetTest(void)
 {
+  CMock_Verify();
+  CMock_Destroy();
   tearDown();
+  CMock_Init();
   setUp();
 }
 
@@ -71,8 +102,10 @@ int main(void)
 {
   suite_setup();
   UnityBegin("test_sapi_oneWire.c");
-  RUN_TEST(test_configOneWireGpio, 10);
-  RUN_TEST(test_configOneWireSpeed, 23);
+  RUN_TEST(test_configOneWireGpio, 12);
+  RUN_TEST(test_configOneWireSpeed, 25);
+  RUN_TEST(test_oneWireSensorPresenceValid, 38);
 
+  CMock_Guts_MemFreeFinal();
   return suite_teardown(UnityEnd());
 }

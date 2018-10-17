@@ -1,5 +1,7 @@
 #include "unity.h"
 #include "sapi_oneWire.h"
+#include "mock_gpio.h"
+#include "mock_oneWire_delay.h"
 
 void setup(void) {
 }
@@ -8,7 +10,7 @@ void tearDown(void) {
 }
 
 void test_configOneWireGpio(void) {
-	/* Se puede configurar cualquier GPIO como master del bus 1-Wire. */
+	/* 1. Se puede configurar cualquier GPIO como master del bus 1-Wire. */
 	// Configuro GPIO valida, espero un 1
 	gpioMap_t gpio = GPIO1;
 	TEST_ASSERT_EQUAL(1, ONE_WIRE_configGpio(gpio));
@@ -21,7 +23,7 @@ void test_configOneWireGpio(void) {
 }
 
 void test_configOneWireSpeed(void) {
-	/* Se puede configurar la velocidad del bus: standard (=1) o overdrive (=0). */
+	/* 2. Se puede configurar la velocidad del bus: standard (=1) o overdrive (=0). */
 	// Configuro velocidad standard, espero un 1
 	uint8_t speed = 1;
 	TEST_ASSERT_EQUAL(1, ONE_WIRE_configSpeed(speed));
@@ -31,4 +33,25 @@ void test_configOneWireSpeed(void) {
 	// Configuro cualquier otro valor, espero un 0
 	speed = 3;
 	TEST_ASSERT_EQUAL(0, ONE_WIRE_configSpeed(speed));
+}
+
+void test_oneWireSensorPresenceValid(void) {
+	/* 3. Se puede verificar si existe presencia de dispositivo iButton sobre el bus. */
+	oneWireData_t oneWireData = {
+			.gpio = GPIO1,
+			.state = ONE_WIRE_SENSOR_IDLE,
+	};
+	/* Configuro Standard speed */
+	ONE_WIRE_configSpeed(1);
+
+	/* Defino prerequisitos de test */
+	gpioInit_ExpectAndReturn(oneWireData.gpio, GPIO_OUTPUT, 1);
+	gpioWrite_ExpectAndReturn(oneWireData.gpio, 0, 1);
+	gpioWrite_ExpectAndReturn(oneWireData.gpio, 1, 1);
+	gpioInit_ExpectAndReturn(oneWireData.gpio, GPIO_INPUT_PULLUP, 1);
+	gpioRead_ExpectAndReturn(oneWireData.gpio, 0);
+	ONE_WIRE_DELAY_250ns_Ignore();
+	/* Tests */
+	TEST_ASSERT_EQUAL(1, ONE_WIRE_verifySensorPresence(&oneWireData));
+	TEST_ASSERT_EQUAL(1, oneWireData.state);
 }
