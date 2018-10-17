@@ -25,7 +25,6 @@ typedef uint8_t bool_t;
 typedef enum {
 	ONE_WIRE_SENSOR_NO_PRESENCE,		// 0, FALSE
 	ONE_WIRE_SENSOR_OPERATIONAL,		// 1, TRUE
-	ONE_WIRE_SENSOR_ERROR,
 	ONE_WIRE_SENSOR_IDLE
 } oneWireSensorState_t;
 

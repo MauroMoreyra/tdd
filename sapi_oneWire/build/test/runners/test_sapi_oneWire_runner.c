@@ -45,6 +45,7 @@ extern void tearDown(void);
 extern void test_configOneWireGpio(void);
 extern void test_configOneWireSpeed(void);
 extern void test_oneWireSensorPresenceValid(void);
+extern void test_oneWireSensorPresenceNotValid(void);
 
 
 /*=======Mock Management=====*/
@@ -105,6 +106,7 @@ int main(void)
   RUN_TEST(test_configOneWireGpio, 12);
   RUN_TEST(test_configOneWireSpeed, 25);
   RUN_TEST(test_oneWireSensorPresenceValid, 38);
+  RUN_TEST(test_oneWireSensorPresenceNotValid, 59);
 
   CMock_Guts_MemFreeFinal();
   return suite_teardown(UnityEnd());

@@ -140,3 +140,53 @@ void test_oneWireSensorPresenceValid(void) {
 ), (UNITY_UINT)(56), UNITY_DISPLAY_STYLE_INT);
 
 }
+
+
+
+void test_oneWireSensorPresenceNotValid(void) {
+
+
+
+ oneWireData_t oneWireData = {
+
+   .gpio = GPIO1,
+
+   .state = ONE_WIRE_SENSOR_IDLE,
+
+ };
+
+
+
+ ONE_WIRE_configSpeed(1);
+
+
+
+
+
+ gpioInit_CMockExpectAndReturn(69, oneWireData.gpio, GPIO_OUTPUT, 1);
+
+ gpioWrite_CMockExpectAndReturn(70, oneWireData.gpio, 0, 1);
+
+ gpioWrite_CMockExpectAndReturn(71, oneWireData.gpio, 1, 1);
+
+ gpioInit_CMockExpectAndReturn(72, oneWireData.gpio, GPIO_INPUT_PULLUP, 1);
+
+ gpioRead_CMockExpectAndReturn(73, oneWireData.gpio, 1);
+
+ ONE_WIRE_DELAY_250ns_CMockIgnore();
+
+
+
+ UnityAssertEqualNumber((UNITY_INT)((1)), (UNITY_INT)((ONE_WIRE_verifySensorPresence(&oneWireData))), (
+
+((void *)0)
+
+), (UNITY_UINT)(76), UNITY_DISPLAY_STYLE_INT);
+
+ UnityAssertEqualNumber((UNITY_INT)((0)), (UNITY_INT)((oneWireData.state)), (
+
+((void *)0)
+
+), (UNITY_UINT)(77), UNITY_DISPLAY_STYLE_INT);
+
+}

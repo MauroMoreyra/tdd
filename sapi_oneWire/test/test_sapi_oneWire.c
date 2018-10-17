@@ -55,3 +55,24 @@ void test_oneWireSensorPresenceValid(void) {
 	TEST_ASSERT_EQUAL(1, ONE_WIRE_verifySensorPresence(&oneWireData));
 	TEST_ASSERT_EQUAL(1, oneWireData.state);
 }
+
+void test_oneWireSensorPresenceNotValid(void) {
+	/* 4. Se puede verificar si NO existe presencia de dispositivo iButton sobre el bus. */
+	oneWireData_t oneWireData = {
+			.gpio = GPIO1,
+			.state = ONE_WIRE_SENSOR_IDLE,
+	};
+	/* Configuro Standard speed */
+	ONE_WIRE_configSpeed(1);
+
+	/* Defino prerequisitos de test */
+	gpioInit_ExpectAndReturn(oneWireData.gpio, GPIO_OUTPUT, 1);
+	gpioWrite_ExpectAndReturn(oneWireData.gpio, 0, 1);
+	gpioWrite_ExpectAndReturn(oneWireData.gpio, 1, 1);
+	gpioInit_ExpectAndReturn(oneWireData.gpio, GPIO_INPUT_PULLUP, 1);
+	gpioRead_ExpectAndReturn(oneWireData.gpio, 1);
+	ONE_WIRE_DELAY_250ns_Ignore();
+	/* Tests */
+	TEST_ASSERT_EQUAL(1, ONE_WIRE_verifySensorPresence(&oneWireData));
+	TEST_ASSERT_EQUAL(0, oneWireData.state);
+}
