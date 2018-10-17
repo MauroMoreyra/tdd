@@ -97,6 +97,8 @@ bool_t ONE_WIRE_verifySensorPresence(oneWireData_t * oneWireData) {
 
 	if(!gpioRead(oneWireData->gpio) == 1)
 		oneWireData->state = ONE_WIRE_SENSOR_OPERATIONAL;
+	else
+		oneWireData->state = ONE_WIRE_SENSOR_NO_PRESENCE;
 
 	// Complete the reset sequence recovery
 	ONE_WIRE_DELAY_250ns(J);
