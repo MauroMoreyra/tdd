@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include "mock_gpio.h"
 #include "mock_oneWire_delay.h"
+#include "mock_oneWire_driver.h"
 
 int GlobalExpectCount;
 int GlobalVerifyOrder;
@@ -46,6 +47,7 @@ extern void test_configOneWireGpio(void);
 extern void test_configOneWireSpeed(void);
 extern void test_oneWireSensorPresenceValid(void);
 extern void test_oneWireSensorPresenceNotValid(void);
+extern void test_oneWireReadSensorRomData(void);
 
 
 /*=======Mock Management=====*/
@@ -56,16 +58,19 @@ static void CMock_Init(void)
   GlobalOrderError = NULL;
   mock_gpio_Init();
   mock_oneWire_delay_Init();
+  mock_oneWire_driver_Init();
 }
 static void CMock_Verify(void)
 {
   mock_gpio_Verify();
   mock_oneWire_delay_Verify();
+  mock_oneWire_driver_Verify();
 }
 static void CMock_Destroy(void)
 {
   mock_gpio_Destroy();
   mock_oneWire_delay_Destroy();
+  mock_oneWire_driver_Destroy();
 }
 
 /*=======Suite Setup=====*/
@@ -103,10 +108,11 @@ int main(void)
 {
   suite_setup();
   UnityBegin("test_sapi_oneWire.c");
-  RUN_TEST(test_configOneWireGpio, 12);
-  RUN_TEST(test_configOneWireSpeed, 25);
-  RUN_TEST(test_oneWireSensorPresenceValid, 38);
-  RUN_TEST(test_oneWireSensorPresenceNotValid, 59);
+  RUN_TEST(test_configOneWireGpio, 13);
+  RUN_TEST(test_configOneWireSpeed, 26);
+  RUN_TEST(test_oneWireSensorPresenceValid, 39);
+  RUN_TEST(test_oneWireSensorPresenceNotValid, 60);
+  RUN_TEST(test_oneWireReadSensorRomData, 81);
 
   CMock_Guts_MemFreeFinal();
   return suite_teardown(UnityEnd());

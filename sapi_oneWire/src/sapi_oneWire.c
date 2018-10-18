@@ -9,7 +9,6 @@ static uint32_t A, B, C, D, E, F, G, H, I, J;	// 'tick' values
 
 /*==================[external functions definition]==========================*/
 
-
 bool_t ONE_WIRE_configGpio(gpioMap_t gpio) {
 	/*
 	 * Configure GPIO for 1-Wire Bus
@@ -104,6 +103,40 @@ bool_t ONE_WIRE_verifySensorPresence(oneWireData_t * oneWireData) {
 	ONE_WIRE_DELAY_250ns(J);
 
 	return result = 1;
+}
+
+bool_t ONE_WIRE_readSensorRomData(oneWireData_t * oneWireData) {
+
+	uint8_t byteIndex;
+
+	/* Envio señal de reset para determinar si hay presencia de sensor */
+	if(ONE_WIRE_verifySensorPresence(oneWireData) == 0)
+		return (oneWireData->state = ONE_WIRE_SENSOR_NO_PRESENCE);
+
+	/* Envio comando de lectura de codigo de ROM */
+	ONE_WIRE_DRIVER_writeByte(ONE_WIRE_COMMAND_READ_ROM);
+
+	/* Leo ROM data */
+	for(byteIndex = 0; byteIndex < ROM_CODE_LENGHT; byteIndex++) {
+		oneWireData->data.romCode[byteIndex] = ONE_WIRE_DRIVER_readByte();
+		/* Guardo datos en variables para acceso inmediato */
+		if(byteIndex == ONE_WIRE_ROM_DATA_FAMILY_CODE)
+			oneWireData->data.familyCode = oneWireData->data.romCode[byteIndex];
+		else if(byteIndex <= ONE_WIRE_ROM_DATA_SN_BYTE6)
+			oneWireData->data.serialNumber[byteIndex - 1] = oneWireData->data.romCode[byteIndex];
+		else
+			oneWireData->data.crc = oneWireData->data.romCode[byteIndex];
+	}
+
+	/* Check false contact error */
+	if(oneWireData->data.romCode[ONE_WIRE_ROM_DATA_FAMILY_CODE] == 0x00)
+		return (oneWireData->state = ONE_WIRE_SENSOR_ERROR);
+
+	/* Verifico CRC */
+	if(ONE_WIRE_DRIVER_checkCRC() == 0)
+		return (oneWireData->state = ONE_WIRE_SENSOR_ERROR);
+	else
+		return (oneWireData->state = ONE_WIRE_SENSOR_OPERATIONAL);
 }
 
 /*==================[internal functions definition]==========================*/

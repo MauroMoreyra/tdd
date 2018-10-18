@@ -2,6 +2,7 @@
 #include "sapi_oneWire.h"
 #include "mock_gpio.h"
 #include "mock_oneWire_delay.h"
+#include "mock_oneWire_driver.h"
 
 void setup(void) {
 }
@@ -75,4 +76,29 @@ void test_oneWireSensorPresenceNotValid(void) {
 	/* Tests */
 	TEST_ASSERT_EQUAL(1, ONE_WIRE_verifySensorPresence(&oneWireData));
 	TEST_ASSERT_EQUAL(0, oneWireData.state);
+}
+
+void test_oneWireReadSensorRomData(void) {
+	/* 5. Se pueden leer los datos de ROM de dispositivo iButton presente sobre el bus. */
+	oneWireData_t oneWireData = {
+			.gpio = GPIO1,
+			.state = ONE_WIRE_SENSOR_IDLE,
+	};
+	uint8_t i;
+
+	/* Defino prerequisitos de test */
+	gpioInit_ExpectAndReturn(oneWireData.gpio, GPIO_OUTPUT, 1);
+	gpioWrite_ExpectAndReturn(oneWireData.gpio, 0, 1);
+	gpioWrite_ExpectAndReturn(oneWireData.gpio, 1, 1);
+	gpioInit_ExpectAndReturn(oneWireData.gpio, GPIO_INPUT_PULLUP, 1);
+	gpioRead_ExpectAndReturn(oneWireData.gpio, 0);
+	ONE_WIRE_DELAY_250ns_Ignore();
+	ONE_WIRE_DRIVER_writeByte_Ignore();
+	ONE_WIRE_DRIVER_readByte_IgnoreAndReturn(0xAA);
+	ONE_WIRE_DRIVER_checkCRC_IgnoreAndReturn(1);
+	/* Tests */
+	TEST_ASSERT_EQUAL(1, ONE_WIRE_readSensorRomData(&oneWireData));
+	for(i = 0; i < ROM_CODE_LENGHT; i++) {
+		TEST_ASSERT_EQUAL(0xAA, oneWireData.data.romCode[i]);
+	}
 }
